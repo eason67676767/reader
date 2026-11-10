@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadWise｜智慧文件與論文閱讀助手</title>
+<style>
+:root{
+ --canvas:#eaf1ff;--paper:#fff;--powder:#dce8ff;--powder-soft:#eef4ff;
+ --sky:#7dd3fc;--sky-soft:#e0f7ff;--indigo:#6d7de8;--indigo-soft:#eceeff;
+ --primary:#2650c8;--primary-dark:#2347a5;--primary-soft:#e3ebff;
+ --green:#22a06b;--green-soft:#e3f7ef;--amber:#b86e00;--amber-soft:#fff3d6;
+ --red:#c2415d;--red-soft:#ffe8ed;--ink:#172b4d;--soft-ink:#415574;
+ --muted:#6b7d99;--line:#cedaf0;--glass:rgba(255,255,255,.84);
+ --shadow:0 22px 60px rgba(38,80,200,.16);--shadow-soft:0 12px 28px rgba(35,71,165,.10);
+ --radius-xl:30px;--radius-lg:22px;--radius-md:16px
+}
+*{box-sizing:border-box}
+input,select,textarea{max-width:100%;font:inherit}
+body{margin:0;min-height:100vh;font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:var(--ink);
+ background:radial-gradient(circle at 10% 8%,rgba(38,80,200,.19),transparent 30%),
+ radial-gradient(circle at 90% 12%,rgba(125,211,252,.34),transparent 28%),
+ radial-gradient(circle at 50% 96%,rgba(109,125,232,.18),transparent 34%),
+ linear-gradient(135deg,#dce8ff 0%,#eef4ff 50%,#e5efff 100%);background-attachment:fixed}
+button{cursor:pointer;font:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid rgba(38,80,200,.38);outline-offset:3px}
+.container{width:min(1240px,calc(100% - 30px));margin:auto;padding:24px 0 56px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 18px;border-radius:999px;background:var(--glass);border:1px solid #fff;box-shadow:var(--shadow-soft);margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:950;letter-spacing:.02em}
+.logo{width:42px;height:42px;display:grid;place-items:center;border-radius:15px;color:white;background:linear-gradient(135deg,var(--primary),var(--indigo));box-shadow:0 10px 22px #2650c844;font-size:22px}
+.menu{display:flex;gap:6px;flex-wrap:wrap}.menu a{padding:9px 12px;border-radius:999px;text-decoration:none;color:var(--soft-ink);font-size:14px;font-weight:850}.menu a:hover{background:var(--sky-soft);color:var(--primary)}
+.hero{display:grid;grid-template-columns:1.12fr .88fr;gap:20px;margin-bottom:22px}
+.hero-card{position:relative;overflow:hidden;min-height:310px;padding:clamp(25px,4vw,45px);border-radius:var(--radius-xl);background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(255,255,255,.7)),linear-gradient(135deg,#2650c82b,#7dd3fc44,#6d7de82b);border:1px solid #fff;box-shadow:var(--shadow)}
+.hero-card:after{content:"📚";position:absolute;right:25px;bottom:8px;font-size:clamp(70px,11vw,130px);opacity:.16;transform:rotate(-12deg)}
+.hero-content{position:relative;z-index:1;max-width:690px}
+.eyebrow{display:inline-block;padding:8px 13px;border-radius:999px;background:var(--sky-soft);color:var(--primary);font-size:13px;font-weight:950;letter-spacing:.04em}
+h1{font-size:clamp(32px,5vw,55px);line-height:1.16;margin:17px 0 12px;letter-spacing:.02em}
+.accent{background:linear-gradient(90deg,var(--primary-dark),var(--primary),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--soft-ink);line-height:1.85;font-size:16px;max-width:640px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{border:0;border-radius:15px;padding:12px 17px;color:white;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--primary-dark));box-shadow:0 12px 24px #2650c833;transition:.18s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.btn.secondary{background:white;color:var(--primary);border:1px solid #2650c833;box-shadow:var(--shadow-soft)}
+.btn.small{padding:9px 12px;font-size:13px;border-radius:12px}
+.btn.danger{background:var(--red-soft);color:var(--red);box-shadow:none}
+.side-stack{display:grid;gap:14px}
+.info-card{border:1px solid #fff;border-radius:var(--radius-xl);padding:20px;background:rgba(255,255,255,.82);box-shadow:var(--shadow-soft)}
+.info-card h2{margin:0 0 8px;font-size:21px}.info-card p{margin:0;color:var(--soft-ink);line-height:1.75;font-size:14px}
+.step-list{display:grid;gap:9px;margin-top:13px}
+.step{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:10px;border-radius:15px;background:var(--powder-soft);border:1px solid var(--line)}
+.step b{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:white;background:linear-gradient(135deg,var(--primary),var(--indigo))}
+.step span{font-size:13px;color:var(--soft-ink);line-height:1.5}
+.section{padding:23px;border-radius:var(--radius-xl);background:var(--glass);border:1px solid #fff;box-shadow:var(--shadow-soft);margin-bottom:21px;backdrop-filter:blur(12px)}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.section h2{font-size:25px;margin:0}.desc{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.7}
+.workspace{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px}
+.sidebar,.mainpanel{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:var(--radius-lg);padding:17px;min-width:0}
+.sidebar h3{margin:0 0 12px;font-size:17px}
+.upload-zone{border:2px dashed #a9bde7;border-radius:18px;padding:18px 12px;text-align:center;background:var(--powder-soft)}
+.upload-zone .big{font-size:35px}.upload-zone p{font-size:13px;color:var(--muted);line-height:1.6;margin:7px 0 12px}
+input[type=file]{width:100%;font-size:12px;color:var(--soft-ink)}
+.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;font-weight:900;color:var(--soft-ink)}
+textarea,input[type=text],select{width:100%;border:1px solid var(--line);border-radius:13px;background:white;padding:11px 12px;color:var(--ink)}
+textarea{min-height:110px;resize:vertical;line-height:1.65}
+.file-meta{margin-top:10px;padding:10px;border-radius:13px;background:var(--green-soft);color:#16734c;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.notice{padding:12px 14px;border-radius:14px;background:var(--amber-soft);color:#805000;font-size:13px;line-height:1.7;margin-top:12px}
+.mainpanel{display:grid;gap:14px;align-content:start}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.toolbar h3{margin:0;font-size:18px}.muted{color:var(--muted);font-size:13px}
+.topic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.topic{padding:14px;border-radius:17px;border:1px solid var(--line);background:var(--powder-soft);text-align:left;color:var(--ink);transition:.15s;min-width:0}
+.topic:hover,.topic.active{border-color:var(--primary);background:var(--primary-soft);box-shadow:0 8px 18px #2650c81a}
+.topic strong{display:block;margin-bottom:5px;font-size:14px}.topic small{display:block;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.content-box{padding:16px;border-radius:17px;background:#fff;border:1px solid var(--line);line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;font-size:14px}
+.empty{padding:28px 15px;text-align:center;color:var(--muted);border:1px dashed #b9c9e7;border-radius:17px;background:#f8faff;line-height:1.8}
+.chat-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.subcard{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:18px;padding:16px;min-width:0}
+.subcard h3{margin:0 0 10px;font-size:17px}.subcard p{font-size:13px;color:var(--muted);line-height:1.7}
+.prompt-output{min-height:145px;background:#f4f7ff;border:1px solid var(--line);border-radius:13px;padding:12px;white-space:pre-wrap;font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+.paper-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.figure-preview{min-height:170px;border:1px dashed #a9bde7;border-radius:15px;background:#f8faff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:13px;text-align:center;padding:12px}
+.figure-preview img{max-width:100%;max-height:340px;object-fit:contain}
+.ref-list{display:grid;gap:9px}
+.ref-item{padding:12px;border:1px solid var(--line);background:var(--powder-soft);border-radius:14px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.ref-item a{color:var(--primary);font-weight:800}
+.status{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;background:var(--indigo-soft);color:var(--indigo);margin-right:5px}
+.status.good{background:var(--green-soft);color:var(--green)}.status.warn{background:var(--amber-soft);color:var(--amber)}
+.footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.8;padding:10px}
+.hidden{display:none!important}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.sidebar{order:0}.mainpanel{order:1}}
+@media(max-width:620px){.container{width:calc(100% - 18px);padding-top:12px}.topbar{border-radius:20px;padding:11px 13px}.menu{display:none}.section{padding:15px}.hero-card{min-height:0;padding:24px}.hero-card:after{font-size:75px;right:8px}.section h2{font-size:21px}.topic-list,.chat-layout,.paper-grid{grid-template-columns:1fr}.toolbar{align-items:flex-start}.btnrow .btn{width:100%}.sidebar,.mainpanel{padding:13px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="container">
+<nav class="topbar">
+ <div class="brand"><div class="logo">讀</div><span>ReadWise｜智慧閱讀助手</span></div>
+ <div class="menu"><a href="#import">匯入文件</a><a href="#topics">主題導讀</a><a href="#ask">提問工作區</a><a href="#paper">論文工具</a></div>
+</nav>
+
+<section class="hero">
+ <div class="hero-card"><div class="hero-content">
+  <span class="eyebrow">READ · UNDERSTAND · DISCUSS</span>
+  <h1>把難懂的文件<br><span class="accent">變成看得懂的小主題</span></h1>
+  <p>先匯入資料，再依主題逐段閱讀。你可以挑選想理解的部分、整理問題，並把內容交給 AI 協助解釋。論文閱讀也能集中整理圖表與參考文獻。</p>
+  <div class="btnrow"><a class="btn" href="#import" style="text-decoration:none">開始閱讀</a><a class="btn secondary" href="#paper" style="text-decoration:none">論文閱讀功能</a></div>
+ </div></div>
+ <aside class="side-stack">
+  <div class="info-card"><h2>🧭 閱讀流程</h2><p>不必一次讀完整份文件，從最想知道的部分開始就好。</p>
+   <div class="step-list"><div class="step"><b>1</b><span><strong>匯入</strong><br>選擇檔案或貼上文字</span></div><div class="step"><b>2</b><span><strong>拆解</strong><br>自動切成可閱讀的小段落</span></div><div class="step"><b>3</b><span><strong>提問</strong><br>整理上下文，請 AI 用白話解釋</span></div></div>
+  </div>
+  <div class="info-card"><h2>🔒 資料使用方式</h2><p>文字解析與主題切分在你的瀏覽器本機進行，不會自動上傳文件。若要使用外部 AI 或文獻資料庫，需自行將內容送出或開啟查證連結。</p></div>
+ </aside>
+</section>
+
+<section class="section" id="import">
+ <div class="section-head"><div><h2>一、匯入你的文件</h2><p class="desc">支援純文字、Markdown、CSV 與 HTML。也可以直接貼上文字內容。</p></div></div>
+ <div class="workspace">
+  <aside class="sidebar">
+   <h3>📂 選擇檔案</h3>
+   <div class="upload-zone"><div class="big">📄</div><p>選擇要閱讀的文件<br>支援 .txt、.md、.csv、.html、.htm</p><input id="fileInput" type="file" accept=".txt,.md,.csv,.html,.htm,text/plain,text/markdown,text/csv,text/html"></div>
+   <div id="fileMeta" class="file-meta hidden" aria-live="polite"></div>
+   <div class="field"><label for="docTitle">文件名稱</label><input id="docTitle" type="text" placeholder="例如：研究論文第一章"></div>
+   <div class="field"><label for="pasteText">或直接貼上文字</label><textarea id="pasteText" placeholder="將文件內容貼在這裡……"></textarea></div>
+   <div class="btnrow"><button class="btn" id="loadTextBtn">載入並拆解主題</button><button class="btn secondary" id="clearBtn">清除內容</button></div>
+   <div class="notice"><strong>檔案格式提醒</strong><br>PDF、DOCX、掃描圖片目前不會在此單檔工具中自動擷取文字。請先使用文字型 PDF 複製文字，或用文件軟體另存／匯出成 TXT，再貼到這裡。掃描圖需先做 OCR。</div>
+  </aside>
+  <div class="mainpanel">
+   <div class="toolbar"><h3>📘 文件內容預覽</h3><span class="muted" id="charCount">尚未載入文件</span></div>
+   <div id="docPreview" class="empty">尚未載入內容<br>請從左側選擇檔案或貼上文字。</div>
+   <div class="toolbar" id="topicToolbar"><h3 id="topicHeading">🧩 主題拆解</h3><span class="muted" id="topicCount">0 個主題</span></div>
+   <div id="topicList" class="empty">載入文件後，這裡會依段落與標題整理主題。</div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="topics">
+ <div class="section-head"><div><h2>二、選擇一個主題深入閱讀</h2><p class="desc">點選上方主題卡片，這裡會顯示對應內容，並可將它帶入提問區。</p></div></div>
+ <div class="paper-grid">
+  <div><div class="toolbar"><h3>目前選取的主題</h3><span class="status" id="selectedStatus">尚未選取</span></div><div id="selectedTopic" class="empty">請先載入文件，再從主題清單選擇一個部分。</div></div>
+  <div><h3 style="margin-top:0">💡 閱讀小提示</h3><div class="content-box">第一次接觸陌生內容時，可以依序問：<br>1. 這段主要在講什麼？<br>2. 有哪些重要名詞？<br>3. 作者為什麼要提出這個觀點？<br>4. 有沒有例子可以幫助理解？<br>5. 這段和前後文有什麼關係？</div></div>
+ </div>
+</section>
+
+<section class="section" id="ask">
+ <div class="section-head"><div><h2>三、提問與白話解釋工作區</h2><p class="desc">把選取主題與問題整理成完整提示詞，再交給你使用的 AI 助手；也可以把 AI 回覆貼回來保存於目前頁面。</p></div></div>
+ <div class="chat-layout">
+  <div class="subcard"><h3>✍️ 你想問什麼？</h3>
+   <div class="field"><label for="question">輸入問題</label><textarea id="question" placeholder="例如：請用完全沒有背景知識的人也能懂的方式，解釋這段在說什麼？"></textarea></div>
+   <div class="field"><label for="level">解釋方式</label><select id="level"><option value="完全新手：先解釋基本概念，再逐步說明，不預設任何背景知識">完全新手</option><option value="一般大學生：說明概念、關鍵名詞與推理過程">一般大學生</option><option value="進階讀者：保留專業術語，補充理論與研究脈絡">進階讀者</option></select></div>
+   <div class="btnrow"><button class="btn" id="makePromptBtn">產生 AI 提問內容</button><button class="btn secondary" id="copyPromptBtn">複製提問內容</button></div>
+   <p>本機版本不會自行產生 AI 答案；複製後可貼到 ChatGPT 或其他 AI 對話中。</p>
+  </div>
+  <div class="subcard"><h3>📨 可複製的完整提問</h3><div id="promptOutput" class="prompt-output">選好主題並輸入問題後，按「產生 AI 提問內容」。</div>
+   <div class="field"><label for="answerPaste">將 AI 的回答貼回來（可選）</label><textarea id="answerPaste" placeholder="把 AI 的解釋貼在這裡，方便和原文一起閱讀……"></textarea></div>
+   <button class="btn secondary small" id="saveAnswerBtn">顯示回答在下方</button>
+   <div id="answerDisplay" class="content-box hidden" style="margin-top:12px"></div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="paper">
+ <div class="section-head"><div><h2>四、論文閱讀專區</h2><p class="desc">整理論文圖表、擷取參考文獻線索，並提供外部查證入口。</p></div></div>
+ <div class="paper-grid">
+  <div class="subcard"><h3>🖼️ 論文圖表解讀</h3><p>上傳圖表截圖或論文中的圖片，先在此預覽。圖片本身不會自動被 AI 解讀；可將圖片交給支援圖片理解的 AI，並搭配圖說與內文提問。</p>
+   <input id="figureInput" type="file" accept="image/*">
+   <div class="figure-preview" id="figurePreview" style="margin-top:12px">尚未選擇圖表圖片</div>
+   <div class="field"><label for="figureCaption">圖號／圖說／你想知道的地方</label><textarea id="figureCaption" placeholder="例如：Figure 2. 請解釋橫軸、縱軸、圖例，以及作者想用這張圖證明什麼。"></textarea></div>
+   <button class="btn secondary small" id="figurePromptBtn">產生圖表提問內容</button>
+  </div>
+  <div class="subcard"><h3>🔎 Reference 文獻線索檢查</h3><p>從已載入的文字中尋找 DOI 與網址，提供查詢入口。工具不會離線判定文獻是否真實，也不會自動確認引用內容是否支持本文主張。</p>
+   <button class="btn" id="scanRefsBtn">掃描 DOI／網址</button>
+   <div id="refResults" class="ref-list" style="margin-top:12px"><div class="empty">載入論文文字後，按下掃描按鈕。</div></div>
+   <div class="notice">查證時請逐項比對：作者、篇名、期刊、年份、卷期頁碼、DOI，以及本文引用該文獻的句子是否真的受到該來源支持。DOI 能開啟不等於引用關係正確。</div>
+  </div>
+ </div>
+</section>
+<div class="footer">ReadWise 本機閱讀工具｜單一 HTML 檔案・不需安裝<br>目前主題切分為文字規則輔助，不等同 AI 語意分析；請以原始文件核對重要資訊。</div>
+</main>
+<script>
+// 文件資料只保存在目前瀏覽器頁面記憶體；重新整理後會清空。
+const $ = id => document.getElementById(id);
+let documentText = '';
+let documentName = '';
+let topics = [];
+let selectedIndex = -1;
+let figureDataUrl = '';
+
+function setStatus(message, isError=false){
+ const box=$('fileMeta'); box.textContent=message; box.classList.remove('hidden');
+ box.style.background=isError?'var(--red-soft)':'var(--green-soft)';
+ box.style.color=isError?'var(--red)':'#16734c';
+}
+function cleanText(raw, ext){
+ if(ext==='html'||ext==='htm'){
+  const doc=new DOMParser().parseFromString(raw,'text/html');
+  doc.querySelectorAll('script,style,noscript').forEach(el=>el.remove());
+  return (doc.body?.innerText || doc.body?.textContent || '').replace(/\n{3,}/g,'\n\n').trim();
+ }
+ return raw.replace(/\r\n?/g,'\n').replace(/\u0000/g,'').trim();
+}
+$('fileInput').addEventListener('change', async e=>{
+ const file=e.target.files && e.target.files[0]; if(!file)return;
+ const ext=(file.name.split('.').pop()||'').toLowerCase();
+ if(!['txt','md','csv','html','htm'].includes(ext)){
+  setStatus('目前不支援此檔案格式。請轉成 TXT／MD／CSV／HTML，或複製文字貼上。',true); return;
+ }
+ try{
+  const raw=await file.text();
+  documentText=cleanText(raw,ext); documentName=file.name;
+  $('docTitle').value=file.name; $('pasteText').value='';
+  loadDocument();
+  setStatus(`已讀取：${file.name}（${file.size.toLocaleString()} bytes）`);
+ }catch(err){setStatus('讀取檔案失敗，請改用貼上文字。',true);}
+});
+$('loadTextBtn').addEventListener('click',()=>{
+ const pasted=$('pasteText').value.trim();
+ if(pasted){documentText=pasted;documentName=$('docTitle').value.trim()||'貼上的文件';}
+ else if(!documentText){setStatus('請先選擇檔案或貼上文字內容。',true);return;}
+ loadDocument();
+});
+function splitIntoTopics(text){
+ // 優先依空行／標題切段；過長段落再依句子切分，屬於規則式分段。
+ let blocks=text.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean);
+ if(blocks.length<2) blocks=text.split(/\n(?=\s*(?:第[一二三四五六七八九十\d]+[章節、.]|[一二三四五六七八九十]+[、.]|#{1,6}\s))/).map(s=>s.trim()).filter(Boolean);
+ if(blocks.length<2){
+  blocks=text.split(/(?<=[。！？.!?])\s*/).map(s=>s.trim()).filter(Boolean);
+ }
+ const out=[]; let buffer='';
+ for(const block of blocks){
+  if((buffer+block).length>850 && buffer){out.push(buffer);buffer=block;}
+  else buffer+=(buffer?'\n\n':'')+block;
+ }
+ if(buffer)out.push(buffer);
+ if(out.length===0)return [];
+ return out.map((content,i)=>({title:guessTitle(content,i),content}));
+}
+function guessTitle(content,i){
+ const first=content.split('\n')[0].replace(/^#{1,6}\s*/,'').trim();
+ if(first.length>4 && first.length<48 && !/[。！？.!?]$/.test(first))return first;
+ const short=content.replace(/\s+/g,' ').slice(0,30);
+ return `主題 ${i+1}｜${short}${content.length>30?'…':''}`;
+}
+function loadDocument(){
+ documentName=$('docTitle').value.trim()||documentName||'未命名文件';
+ if(!documentText.trim()){setStatus('文件內容是空的，請確認檔案或貼上的文字。',true);return;}
+ topics=splitIntoTopics(documentText); selectedIndex=-1;
+ $('charCount').textContent=`${documentText.length.toLocaleString()} 個字元`;
+ $('docPreview').className='content-box'; $('docPreview').textContent=documentText.slice(0,4500)+(documentText.length>4500?'\n\n……（預覽僅顯示前 4,500 字元，主題仍以完整文字切分）':'');
+ $('topicCount').textContent=`${topics.length} 個主題`;
+ renderTopics();
+ $('selectedTopic').className='empty';$('selectedTopic').textContent='請從主題清單選擇一個部分。';
+ $('selectedStatus').textContent='尚未選取';
+}
+function renderTopics(){
+ const list=$('topicList');list.innerHTML='';
+ if(!topics.length){list.className='empty';list.textContent='沒有可顯示的主題。';return;}
+ list.className='topic-list';
+ topics.forEach((topic,i)=>{
+  const button=document.createElement('button');button.className='topic'+(i===selectedIndex?' active':'');button.type='button';
+  const title=document.createElement('strong');title.textContent=topic.title;
+  const desc=document.createElement('small');desc.textContent=topic.content.replace(/\s+/g,' ').slice(0,105)+(topic.content.length>105?'…':'');
+  button.append(title,desc);button.addEventListener('click',()=>selectTopic(i));list.append(button);
+ });
+}
+function selectTopic(i){
+ selectedIndex=i;const t=topics[i];
+ $('selectedStatus').textContent=`主題 ${i+1}`;
+ $('selectedTopic').className='content-box';$('selectedTopic').textContent=t.content;
+ renderTopics();
+}
+$('clearBtn').addEventListener('click',()=>{
+ documentText='';documentName='';topics=[];selectedIndex=-1;figureDataUrl='';
+ $('fileInput').value='';$('pasteText').value='';$('docTitle').value='';
+ $('docPreview').className='empty';$('docPreview').textContent='尚未載入內容\n請從左側選擇檔案或貼上文字。';
+ $('topicList').className='empty';$('topicList').textContent='載入文件後，這裡會依段落與標題整理主題。';
+ $('topicCount').textContent='0 個主題';$('charCount').textContent='尚未載入文件';
+ $('selectedTopic').className='empty';$('selectedTopic').textContent='請先載入文件，再從主題清單選擇一個部分。';
+ $('selectedStatus').textContent='尚未選取';$('fileMeta').classList.add('hidden');
+ $('promptOutput').textContent='選好主題並輸入問題後，按「產生 AI 提問內容」。';
+ $('answerPaste').value='';$('answerDisplay').classList.add('hidden');$('refResults').innerHTML='<div class="empty">載入論文文字後，按下掃描按鈕。</div>';
+});
+function makePrompt(){
+ const question=$('question').value.trim()||'請先用簡單清楚的方式說明這段內容的重點。';
+ const level=$('level').value;
+ const context=selectedIndex>=0?topics[selectedIndex].content:documentText.slice(0,6000);
+ if(!context){setStatus('請先載入文件內容。',true);return '';}
+ return `請協助我閱讀以下文件。請遵守：${level}。\n\n說明時請：\n1. 先用一兩句話說明核心意思。\n2. 把專有名詞逐一解釋，必要時舉生活例子。\n3. 按照原文邏輯逐步說明，不要跳步。\n4. 區分原文確實寫出的內容與你的推論；不確定處請明確說明。\n5. 最後整理三個重點與我可以進一步思考的問題。\n\n我的問題：${question}\n\n文件名稱：${documentName}\n選取主題：${selectedIndex>=0?topics[selectedIndex].title:'文件前段'}\n\n【原文內容】\n${context}`;
+}
+$('makePromptBtn').addEventListener('click',()=>{const p=makePrompt();if(p)$('promptOutput').textContent=p;});
+$('copyPromptBtn').addEventListener('click',async()=>{
+ const p=$('promptOutput').textContent;
+ if(!p||p.startsWith('選好主題')){const made=makePrompt();if(!made)return;$('promptOutput').textContent=made;}
+ try{await navigator.clipboard.writeText($('promptOutput').textContent);setStatus('提問內容已複製，可以貼到 AI 對話中。');}
+ catch(e){setStatus('瀏覽器不允許自動複製，請手動選取提問內容複製。',true);}
+});
+$('saveAnswerBtn').addEventListener('click',()=>{
+ const answer=$('answerPaste').value.trim();if(!answer){$('answerDisplay').classList.add('hidden');return;}
+ $('answerDisplay').textContent=answer;$('answerDisplay').classList.remove('hidden');
+});
+$('figureInput').addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!file.type.startsWith('image/'))return;
+ const reader=new FileReader();reader.onload=()=>{figureDataUrl=reader.result;$('figurePreview').innerHTML='';const img=document.createElement('img');img.src=figureDataUrl;img.alt='使用者上傳的論文圖表';$('figurePreview').append(img);};
+ reader.readAsDataURL(file);
+});
+$('figurePromptBtn').addEventListener('click',()=>{
+ const caption=$('figureCaption').value.trim();
+ const prompt=`請以完全新手也能理解的方式，協助我解讀這張論文圖表。請依序說明：圖表要回答的問題、橫軸與縱軸、單位與圖例、每個重要趨勢／差異、作者可能想支持的結論，以及單靠圖表無法判斷的事情。不要憑空猜測看不清楚的數據；請指出需要回到論文內文確認之處。\n\n圖說與我的問題：${caption||'請先描述圖表，再逐步解釋。'}\n\n提醒：請把圖表圖片一併上傳到支援圖片理解的 AI 對話，單獨貼上這段文字不會包含圖片。`;
+ $('promptOutput').textContent=prompt;document.querySelector('#ask').scrollIntoView({behavior:'smooth'});
+});
+function scanReferences(){
+ const refs=new Map();
+ const doiRegex=/\b10\.\d{4,9}\/[-._;()/:A-Z0-9]+/gi;
+ const urlRegex=/https?:\/\/[^\s<>"')\]]+/gi;
+ let m;
+ while((m=doiRegex.exec(documentText))!==null){const doi=m[0].replace(/[.,;]+$/,'');refs.set('doi:'+doi,{kind:'DOI',value:doi,url:'https://doi.org/'+doi});}
+ while((m=urlRegex.exec(documentText))!==null){const url=m[0].replace(/[.,;]+$/,'');if(!refs.has('url:'+url))refs.set('url:'+url,{kind:'網址',value:url,url});}
+ const box=$('refResults');box.innerHTML='';
+ if(!refs.size){box.className='empty';box.textContent='目前沒有辨識到 DOI 或網址。參考文獻可能只有文字格式，需人工核對。';return;}
+ box.className='ref-list';
+ [...refs.values()].slice(0,100).forEach(ref=>{
+  const item=document.createElement('div');item.className='ref-item';
+  const label=document.createElement('span');label.className='status warn';label.textContent=ref.kind+'｜待查證';
+  const text=document.createElement('div');text.textContent=ref.value;
+  const link=document.createElement('a');link.href=ref.kind==='DOI'?'https://search.crossref.org/?q='+encodeURIComponent(ref.value):ref.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=ref.kind==='DOI'?'在 Crossref 搜尋此 DOI':'開啟網址';
+  item.append(label,text,link);box.append(item);
+ });
+ const note=document.createElement('div');note.className='notice';note.textContent=`找到 ${refs.size} 筆 DOI／網址線索。這只是字串辨識，不代表已核實文獻真實性或引用關係。`;box.append(note);
+}
+$('scanRefsBtn').addEventListener('click',()=>{if(!documentText){setStatus('請先載入論文文字。',true);return;}scanReferences();});
+
+// 鍵盤操作：Ctrl/Command + Enter 可在提問欄快速產生提示詞。
+$('question').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')$('makePromptBtn').click();});
+</script>
+</body>
+</html>
